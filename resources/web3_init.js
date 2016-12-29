@@ -30,12 +30,16 @@ StatusHttpProvider.prototype.sendAsync = function (payload, callback) {
 
     var messageId = callbackId++;
     callbacks[messageId] = callback;
-    var data = {
-        payload: JSON.stringify(payload),
-        callbackId: JSON.stringify(messageId)
-    };
+    if(typeof StatusBridge == "undefined") {
+        var data = {
+            payload: JSON.stringify(payload),
+            callbackId: JSON.stringify(messageId)
+        };
 
-    webkit.messageHandlers.sendRequest.postMessage(JSON.stringify(data));
+        webkit.messageHandlers.sendRequest.postMessage(JSON.stringify(data));
+    } else {
+        StatusBridge.sendRequest(JSON.stringify(messageId), JSON.stringify(payload));
+    }
 };
 
 /**
