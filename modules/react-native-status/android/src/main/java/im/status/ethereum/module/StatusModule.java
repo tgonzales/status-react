@@ -1,11 +1,8 @@
 package im.status.ethereum.module;
 
 import android.app.Activity;
+import android.os.*;
 import android.view.WindowManager;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Message;
-import android.os.RemoteException;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
@@ -13,7 +10,9 @@ import android.webkit.WebStorage;
 
 import com.facebook.react.bridge.*;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.github.status_im.status_go.cmd.Statusgo;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -135,6 +134,32 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     // Geth
 
+    public void doStartNode() {
+
+        Activity currentActivity = getCurrentActivity();
+
+        File extStore = Environment.getExternalStorageDirectory();
+        String dataFolder = extStore.exists() ?
+                extStore.getAbsolutePath() + "/ethereum" :
+                currentActivity.getApplicationInfo().dataDir + "/ethereum";
+        Log.d(TAG, "Starting Geth node in folder: " + dataFolder);
+
+        try {
+            final File newFile = new File(dataFolder);
+            // todo handle error?
+            newFile.mkdir();
+        } catch (Exception e) {
+            Log.e(TAG, "error making folder: " + dataFolder, e);
+        }
+
+        Statusgo.StartNode(dataFolder);
+        Log.d(TAG, "Geth node started");
+        Log.w(TAG, "adding peer");
+
+        Statusgo.AddPeer("enode://e19d89e6faf2772e2f250e9625478ee7f313fcc0bb5e9310d5d407371496d9d7d73ccecd9f226cc2a8be34484525f72ba9db9d26f0222f4efc3c6d9d995ee224@198.199.105.122:30303");
+        Statusgo.AddPeer("enode://1ad53266faaa9258ae71eef4d162022ba0d39498e1a3488e6c65fd86e0fb528e2aa68ad0e199da69fd39f4a3a38e9e8e95ac53ba5cc7676dfeaacf5fd6c0ad27@139.59.212.114:30303");
+    }
+
     @ReactMethod
     public void startNode(Callback callback) {
         Log.d(TAG, "startNode");
@@ -143,10 +168,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        String callbackIdentifier = createIdentifier();
-        callbacks.put(callbackIdentifier, callback);
+        doStartNode();
 
-        status.startNode(callbackIdentifier);
+        callback.invoke(false);
     }
 
     @ReactMethod
@@ -157,7 +181,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        status.startRPC();
+        Statusgo.StartNodeRPCServer();
     }
 
     @ReactMethod
@@ -168,7 +192,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        status.stopRPC();
+        Statusgo.StopNodeRPCServer();
     }
 
     @ReactMethod
@@ -178,11 +202,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             callback.invoke(false);
             return;
         }
+        String result = Statusgo.Login(address, password);
 
-        String callbackIdentifier = createIdentifier();
-        callbacks.put(callbackIdentifier, callback);
-
-        status.login(callbackIdentifier, address, password);
+        callback.invoke(result);
     }
 
     @ReactMethod
@@ -193,10 +215,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        String callbackIdentifier = createIdentifier();
-        callbacks.put(callbackIdentifier, callback);
+        String res = Statusgo.CreateAccount(password);
 
-        status.createAccount(callbackIdentifier, password);
+        callback.invoke(res);
     }
 
     @ReactMethod
@@ -207,10 +228,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        String callbackIdentifier = createIdentifier();
-        callbacks.put(callbackIdentifier, callback);
+        String res = Statusgo.RecoverAccount(password, passphrase);
 
-        status.recoverAccount(callbackIdentifier, passphrase, password);
+        callback.invoke(res);
     }
 
     private String createIdentifier() {
@@ -224,12 +244,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             callback.invoke(false);
             return;
         }
+        String res = Statusgo.CompleteTransaction(hash, password);
 
-        Log.d(TAG, "Complete transaction: " + hash);
-        String callbackIdentifier = createIdentifier();
-        callbacks.put(callbackIdentifier, callback);
-
-        status.completeTransaction(callbackIdentifier, hash, password);
+        callback.invoke(res);
     }
 
 
@@ -240,8 +257,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        Log.d(TAG, "Discard transaction: " + id);
-        status.discardTransaction(id);
+        String res = Statusgo.DiscardTransaction(id);
     }
 
     // Jail
@@ -254,10 +270,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        String callbackIdentifier = createIdentifier();
-        callbacks.put(callbackIdentifier, callback);
+        Statusgo.InitJail(js);
 
-        status.initJail(callbackIdentifier, js);
+        callback.invoke(false);
     }
 
     @ReactMethod
@@ -268,10 +283,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        String callbackIdentifier = createIdentifier();
-        callbacks.put(callbackIdentifier, callback);
+        String res = Statusgo.Parse(chatId, js);
 
-        status.parseJail(callbackIdentifier, chatId, js);
+        callback.invoke(res);
     }
 
     @ReactMethod
@@ -282,10 +296,9 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        String callbackIdentifier = createIdentifier();
-        callbacks.put(callbackIdentifier, callback);
+        String res = Statusgo.Call(chatId, path, params);
 
-        status.callJail(callbackIdentifier, chatId, path, params);
+        callback.invoke(res);
     }
 
     @ReactMethod
