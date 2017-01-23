@@ -15,6 +15,9 @@ import com.github.status_im.status_go.cmd.Statusgo;
 import java.io.File;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventListener, ConnectorHandler {
 
@@ -24,8 +27,13 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     private HashMap<String, Callback> callbacks = new HashMap<>();
 
+    private ExecutorService executor;
+
     StatusModule(ReactApplicationContext reactContext) {
         super(reactContext);
+        if (executor == null) {
+            executor = Executors.newCachedThreadPool();
+        }
         reactContext.addLifecycleEventListener(this);
     }
 
@@ -168,7 +176,14 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        doStartNode();
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                doStartNode();
+            }
+        };
+
+        thread.start();
 
         callback.invoke(false);
     }
@@ -181,7 +196,14 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        Statusgo.StartNodeRPCServer();
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                Statusgo.StartNodeRPCServer();
+            }
+        };
+
+        thread.start();
     }
 
     @ReactMethod
@@ -192,45 +214,72 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        Statusgo.StopNodeRPCServer();
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                Statusgo.StopNodeRPCServer();
+            }
+        };
+
+        thread.start();
     }
 
     @ReactMethod
-    public void login(String address, String password, Callback callback) {
+    public void login(final String address, final String password, final Callback callback) {
         Log.d(TAG, "login");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
         }
-        String result = Statusgo.Login(address, password);
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                String result = Statusgo.Login(address, password);
 
-        callback.invoke(result);
+                callback.invoke(result);
+            }
+        };
+
+        thread.start();
     }
 
     @ReactMethod
-    public void createAccount(String password, Callback callback) {
+    public void createAccount(final String password, final Callback callback) {
         Log.d(TAG, "createAccount");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
         }
 
-        String res = Statusgo.CreateAccount(password);
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                String res = Statusgo.CreateAccount(password);
 
-        callback.invoke(res);
+                callback.invoke(res);
+            }
+        };
+
+        thread.start();
     }
 
     @ReactMethod
-    public void recoverAccount(String passphrase, String password, Callback callback) {
+    public void recoverAccount(final String passphrase, final String password, final Callback callback) {
         Log.d(TAG, "recoverAccount");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
         }
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                String res = Statusgo.RecoverAccount(password, passphrase);
 
-        String res = Statusgo.RecoverAccount(password, passphrase);
+                callback.invoke(res);
+            }
+        };
 
-        callback.invoke(res);
+        thread.start();
     }
 
     private String createIdentifier() {
@@ -238,67 +287,103 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
-    public void completeTransaction(String hash, String password, Callback callback) {
+    public void completeTransaction(final String hash, final String password, final Callback callback) {
         Log.d(TAG, "completeTransaction");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
         }
-        String res = Statusgo.CompleteTransaction(hash, password);
 
-        callback.invoke(res);
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                String res = Statusgo.CompleteTransaction(hash, password);
+
+                callback.invoke(res);
+            }
+        };
+
+        thread.start();
     }
 
 
     @ReactMethod
-    public void discardTransaction(String id) {
+    public void discardTransaction(final String id) {
         Log.d(TAG, "discardTransaction");
         if (!checkAvailability()) {
             return;
         }
 
-        String res = Statusgo.DiscardTransaction(id);
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                Statusgo.DiscardTransaction(id);
+            }
+        };
+
+        thread.start();
     }
 
     // Jail
 
     @ReactMethod
-    public void initJail(String js, Callback callback) {
+    public void initJail(final String js, final Callback callback) {
         Log.d(TAG, "initJail");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
         }
 
-        Statusgo.InitJail(js);
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                Statusgo.InitJail(js);
 
-        callback.invoke(false);
+                callback.invoke(false);
+            }
+        };
+
+        thread.start();
     }
 
     @ReactMethod
-    public void parseJail(String chatId, String js, Callback callback) {
+    public void parseJail(final String chatId, final String js, final Callback callback) {
         Log.d(TAG, "parseJail");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
         }
 
-        String res = Statusgo.Parse(chatId, js);
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                String res = Statusgo.Parse(chatId, js);
 
-        callback.invoke(res);
+                callback.invoke(res);
+            }
+        };
+
+        thread.start();
     }
 
     @ReactMethod
-    public void callJail(String chatId, String path, String params, Callback callback) {
+    public void callJail(final String chatId, final String path, final String params, final Callback callback) {
         Log.d(TAG, "callJail");
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
         }
 
-        String res = Statusgo.Call(chatId, path, params);
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                String res = Statusgo.Call(chatId, path, params);
 
-        callback.invoke(res);
+                callback.invoke(res);
+            }
+        };
+
+        thread.start();
     }
 
     @ReactMethod
