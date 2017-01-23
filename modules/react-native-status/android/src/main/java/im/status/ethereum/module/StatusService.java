@@ -242,7 +242,7 @@ public class StatusService extends Service {
 
         Bundle replyData = new Bundle();
         replyData.putString("data", result);
-        createAndSendReply(message, StatusMessages.MSG_LOGIN, replyData);
+        createAndSendReply(message, StatusMessages.MSG_LOGIN, replyData);*/
     }
 
     private void completeTransaction(Message message){

@@ -27,7 +27,8 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     private HashMap<String, Callback> callbacks = new HashMap<>();
 
-    private ExecutorService executor;
+    private static StatusModule module;
+    private ExecutorService executor = null;
 
     StatusModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -44,6 +45,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
     @Override
     public void onHostResume() {  // Actvity `onResume`
+        module = this;
         Activity currentActivity = getCurrentActivity();
         if (currentActivity == null) {
             Log.d(TAG, "On host Activity doesn't exist");
@@ -358,7 +360,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             @Override
             public void run() {
                 String res = Statusgo.Parse(chatId, js);
-
+                Log.d(TAG, "endParseJail");
                 callback.invoke(res);
             }
         };
@@ -369,21 +371,31 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @ReactMethod
     public void callJail(final String chatId, final String path, final String params, final Callback callback) {
         Log.d(TAG, "callJail");
+        Log.d(TAG, path);
         if (!checkAvailability()) {
             callback.invoke(false);
             return;
         }
 
-        Thread thread = new Thread() {
-            @Override
-            public void run() {
-                String res = Statusgo.Call(chatId, path, params);
+        executor.execute(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d(TAG, "startCallJail");
+                        String res = Statusgo.Call(chatId, path, params);
+                        Log.d(TAG, "endCallJail");
+                        callback.invoke(res);
+                    }
+                }
+        );
+    }
 
-                callback.invoke(res);
-            }
-        };
+    public static void signalEvent(String jsonEvent) {
 
-        thread.start();
+        Log.d(TAG, "Signal event: " + jsonEvent);
+        WritableMap params = Arguments.createMap();
+        params.putString("jsonEvent", jsonEvent);
+        module.getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit("gethEvent", params);
     }
 
     @ReactMethod
