@@ -27,16 +27,16 @@ public class StatusConnector extends ServiceConnector {
 
     public void stopNode(String callbackIdentifier) {
 
-        if (checkBound()) {
+        //if (checkBound()) {
             sendMessage(callbackIdentifier, StatusMessages.MSG_STOP_NODE, null);
-        }
+        //}
     }
 
     public void resumeNode(String callbackIdentifier) {
 
-        if (checkBound()) {
+        //if (checkBound()) {
             sendMessage(callbackIdentifier, StatusMessages.MSG_RESUME_NODE, null);
-        }
+        //}
     }
 
     public void startRPC() {

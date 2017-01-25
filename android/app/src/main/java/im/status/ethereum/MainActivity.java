@@ -18,6 +18,7 @@ public class MainActivity extends ReactActivity {
     protected void configureStatus() {
         // Required because of crazy APN settings redirecting localhost (found in GB)
         Properties properties = System.getProperties();
+        //properties.setProperty("http.keepAlive", "false");
         properties.setProperty("http.nonProxyHosts", "localhost|127.0.0.1");
         properties.setProperty("https.nonProxyHosts", "localhost|127.0.0.1");
     }

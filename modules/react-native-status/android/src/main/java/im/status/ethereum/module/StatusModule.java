@@ -156,11 +156,11 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             callback.invoke(false);
             return;
         }
-        //String callbackIdentifier = createIdentifier();
-        //callbacks.put(callbackIdentifier, callback);
+        String callbackIdentifier = createIdentifier();
+        callbacks.put(callbackIdentifier, callback);
 
-        StatusService.stopNode();
-        //status.stopNode(callbackIdentifier);
+        //StatusService.stopNode();
+        status.stopNode(callbackIdentifier);
     }
 
     @ReactMethod
@@ -171,11 +171,11 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        StatusService.resumeNode();
-        //String callbackIdentifier = createIdentifier();
-        //callbacks.put(callbackIdentifier, callback);
+        //StatusService.resumeNode();
+        String callbackIdentifier = createIdentifier();
+        callbacks.put(callbackIdentifier, callback);
 
-        //status.resumeNode(callbackIdentifier);
+        status.resumeNode(callbackIdentifier);
     }
 
     @ReactMethod
