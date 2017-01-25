@@ -150,6 +150,34 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     @ReactMethod
+    public void stopNode(Callback callback) {
+        Log.d(TAG, "stopNode");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        String callbackIdentifier = createIdentifier();
+        callbacks.put(callbackIdentifier, callback);
+
+        status.stopNode(callbackIdentifier);
+    }
+
+    @ReactMethod
+    public void resumeNode(Callback callback) {
+        Log.d(TAG, "resumeNode");
+        if (!checkAvailability()) {
+            callback.invoke(false);
+            return;
+        }
+
+        String callbackIdentifier = createIdentifier();
+        callbacks.put(callbackIdentifier, callback);
+
+        status.resumeNode(callbackIdentifier);
+    }
+
+    @ReactMethod
     public void startNodeRPCServer() {
         Log.d(TAG, "startNodeRPCServer");
         final Activity activity = getCurrentActivity();

@@ -4,6 +4,7 @@
             [status-im.handlers]
             [status-im.subs]
             [status-im.components.react :refer [app-registry
+                                                app-state
                                                 keyboard
                                                 orientation
                                                 back-android
@@ -82,7 +83,8 @@
                        "keyboardDidHide"
                        #(when-not (= 0 @keyboard-height)
                           (dispatch [:set :keyboard-height 0])))
-         (.hide splash-screen))
+         (.hide splash-screen)
+         (.addEventListener app-state "change" #(dispatch [:app-state-changed %])))
        :render
        (fn []
          (when @view-id

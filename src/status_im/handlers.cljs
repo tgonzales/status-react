@@ -163,3 +163,13 @@
   (fn [db [_]]
     ;; todo fetch phone number from db
     (assoc db :user-phone-number "123")))
+
+;; -- AppState ------
+
+(register-handler :app-state-changed
+  (u/side-effect!
+    (fn [_ [_ state-str]]
+      (when (= state-str "background")
+        (status/stop-node (partial println :stop-node)))
+      (when (= state-str "active")
+        (status/resume-node (partial println :resume-node))))))

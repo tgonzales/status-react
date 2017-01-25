@@ -111,6 +111,10 @@ public class StatusService extends Service {
                 stopNode(message);
                 break;
 
+            case StatusMessages.MSG_RESUME_NODE:
+                resumeNode(message);
+                break;
+
             case StatusMessages.MSG_CREATE_ACCOUNT:
                 createAccount(message);
                 break;
@@ -191,9 +195,20 @@ public class StatusService extends Service {
     }
 
     private void stopNode(Message message) {
-        // TODO: stop node
+        Log.d(TAG, "beginStopNode" + dataFolder);
+        Statusgo.StopNode();
+        Log.d(TAG, "endStopNode" + dataFolder);
 
         createAndSendReply(message, StatusMessages.MSG_STOP_NODE, null);
+    }
+
+    private void resumeNode(Message message) {
+        Log.d(TAG, "beginResumeNode" + dataFolder);
+        Statusgo.ResumeNode();
+        //Statusgo.StartNodeRPCServer();
+        Log.d(TAG, "endResumeNode" + dataFolder);
+
+        createAndSendReply(message, StatusMessages.MSG_RESUME_NODE, null);
     }
 
     private void startRPC() {

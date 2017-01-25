@@ -32,6 +32,13 @@ public class StatusConnector extends ServiceConnector {
         }
     }
 
+    public void resumeNode(String callbackIdentifier) {
+
+        if (checkBound()) {
+            sendMessage(callbackIdentifier, StatusMessages.MSG_RESUME_NODE, null);
+        }
+    }
+
     public void startRPC() {
         if (checkBound()) {
             sendMessage(null, StatusMessages.MSG_START_RPC, null);

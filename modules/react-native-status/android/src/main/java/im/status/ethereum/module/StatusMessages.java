@@ -69,4 +69,9 @@ public class StatusMessages {
      */
     static final int MSG_STOP_RPC = 13;
 
+    /**
+     * Stop the node
+     */
+    static final int MSG_RESUME_NODE = 14;
+
 }

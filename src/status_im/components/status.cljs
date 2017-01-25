@@ -62,6 +62,14 @@
   (when status
     (call-module #(.startNode status on-result))))
 
+(defn stop-node [on-result]
+  (when status
+    (call-module #(.stopNode status on-result))))
+
+(defn resume-node [on-result]
+  (when status
+    (call-module #(.resumeNode status on-result))))
+
 (defn stop-rpc-server []
   (when status
     (call-module #(.stopNodeRPCServer status))))
