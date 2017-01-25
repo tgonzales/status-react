@@ -71,7 +71,7 @@ public class StatusService extends Service {
 
     @Override
     public void onCreate() {
-        
+        Log.d(TAG, "Status Service created!");
         super.onCreate();
     }
 
@@ -83,7 +83,7 @@ public class StatusService extends Service {
             executor.shutdownNow();
         }
         //TODO: stop geth
-        stopNode(null);
+        //stopNode(null);
         isNodeInitialized = false;
         Log.d(TAG, "Status Service stopped !");
     }
@@ -108,11 +108,11 @@ public class StatusService extends Service {
                 break;
 
             case StatusMessages.MSG_STOP_NODE:
-                stopNode(message);
+                //de(message);
                 break;
 
             case StatusMessages.MSG_RESUME_NODE:
-                resumeNode(message);
+                //resumeNode(message);
                 break;
 
             case StatusMessages.MSG_CREATE_ACCOUNT:
@@ -194,21 +194,21 @@ public class StatusService extends Service {
         createAndSendReply(message, StatusMessages.MSG_START_NODE, null);
     }
 
-    private void stopNode(Message message) {
-        Log.d(TAG, "beginStopNode" + dataFolder);
+    public static void stopNode() {
+        Log.d(TAG, "beginStopNode");
         Statusgo.StopNode();
-        Log.d(TAG, "endStopNode" + dataFolder);
+        Log.d(TAG, "endStopNode");
 
-        createAndSendReply(message, StatusMessages.MSG_STOP_NODE, null);
+        //createAndSendReply(message, StatusMessages.MSG_STOP_NODE, null);
     }
 
-    private void resumeNode(Message message) {
-        Log.d(TAG, "beginResumeNode" + dataFolder);
+    public static void resumeNode() {
+        Log.d(TAG, "beginResumeNode");
         Statusgo.ResumeNode();
         //Statusgo.StartNodeRPCServer();
-        Log.d(TAG, "endResumeNode" + dataFolder);
+        Log.d(TAG, "endResumeNode");
 
-        createAndSendReply(message, StatusMessages.MSG_RESUME_NODE, null);
+        //createAndSendReply(message, StatusMessages.MSG_RESUME_NODE, null);
     }
 
     private void startRPC() {

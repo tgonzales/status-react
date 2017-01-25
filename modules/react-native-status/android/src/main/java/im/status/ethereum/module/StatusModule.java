@@ -67,7 +67,7 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     @Override
     public void onHostDestroy() {  // Actvity `onDestroy`
         if (status != null) {
-            status.stopNode(null);
+            //status.stopNode(null);
         }
     }
 
@@ -156,11 +156,11 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             callback.invoke(false);
             return;
         }
+        //String callbackIdentifier = createIdentifier();
+        //callbacks.put(callbackIdentifier, callback);
 
-        String callbackIdentifier = createIdentifier();
-        callbacks.put(callbackIdentifier, callback);
-
-        status.stopNode(callbackIdentifier);
+        StatusService.stopNode();
+        //status.stopNode(callbackIdentifier);
     }
 
     @ReactMethod
@@ -171,10 +171,11 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
             return;
         }
 
-        String callbackIdentifier = createIdentifier();
-        callbacks.put(callbackIdentifier, callback);
+        StatusService.resumeNode();
+        //String callbackIdentifier = createIdentifier();
+        //callbacks.put(callbackIdentifier, callback);
 
-        status.resumeNode(callbackIdentifier);
+        //status.resumeNode(callbackIdentifier);
     }
 
     @ReactMethod
