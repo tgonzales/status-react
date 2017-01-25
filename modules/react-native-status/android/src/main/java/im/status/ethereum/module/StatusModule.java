@@ -2,6 +2,7 @@ package im.status.ethereum.module;
 
 import android.app.Activity;
 import android.os.*;
+import android.os.Process;
 import android.view.WindowManager;
 import android.util.Log;
 import android.webkit.CookieManager;
@@ -15,7 +16,6 @@ import com.github.status_im.status_go.cmd.Statusgo;
 import java.io.File;
 import java.util.HashMap;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -164,10 +164,6 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
 
         Statusgo.StartNode(dataFolder);
         Log.d(TAG, "Geth node started");
-        Log.w(TAG, "adding peer");
-
-        Statusgo.AddPeer("enode://e19d89e6faf2772e2f250e9625478ee7f313fcc0bb5e9310d5d407371496d9d7d73ccecd9f226cc2a8be34484525f72ba9db9d26f0222f4efc3c6d9d995ee224@198.199.105.122:30303");
-        Statusgo.AddPeer("enode://1ad53266faaa9258ae71eef4d162022ba0d39498e1a3488e6c65fd86e0fb528e2aa68ad0e199da69fd39f4a3a38e9e8e95ac53ba5cc7676dfeaacf5fd6c0ad27@139.59.212.114:30303");
     }
 
     @ReactMethod
@@ -181,10 +177,13 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
         Thread thread = new Thread() {
             @Override
             public void run() {
+                Process.setThreadPriority(Process.THREAD_PRIORITY_URGENT_AUDIO);
                 doStartNode();
             }
         };
+        //doStartNode();
 
+        //thread.setPriority(Thread.MAX_PRIORITY);
         thread.start();
 
         callback.invoke(false);
