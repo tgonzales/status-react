@@ -17,7 +17,8 @@
             [taoensso.timbre :as log :refer-macros [debug]]
             [status-im.constants :as c]
             [status-im.components.status :as status]
-            [clojure.string :refer [join]]))
+            [clojure.string :refer [join]]
+            [status-im.utils.scheduler :as s]))
 
 (register-handler :initialize-protocol
   (fn [db [_ current-account-id]]
@@ -71,16 +72,24 @@
         (when (and (not= sync-data state) (= :in-progress new-state))
           (dispatch [:set :sync-data state]))
         (when (not= sync-state new-state)
-          (dispatch [:set :sync-state new-state]))))))
+          (dispatch [:set :sync-state new-state]))
+        (let [timeout (if (#{:done :synced} new-state) 60 10)]
+          (s/execute-later #(dispatch [:start-sync]) (s/s->ms timeout)))))))
+
+(register-handler :start-sync
+  (u/side-effect!
+    (fn [{:keys [web3] :as db}]
+      (.getSyncing
+        (.-eth web3)
+        (fn [error sync]
+          (dispatch [:update-sync-state error sync]))))))
 
 (register-handler :initialize-sync-listener
-  (fn [{:keys [web3 sync-listener] :as db} _]
+  (fn [{:keys [sync-listener] :as db} _]
     (if-not sync-listener
-      (let [sync-listener (.isSyncing
-                            (.-eth web3)
-                            (fn [error sync]
-                              (dispatch [:update-sync-state error sync])))]
-        (assoc db :sync-listener sync-listener))
+      (do
+        (dispatch [:start-sync])
+        (assoc db :sync-listener true))
       db)))
 
 (register-handler :incoming-message
