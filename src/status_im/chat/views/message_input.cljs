@@ -110,7 +110,7 @@
                  [send-button {:on-press (fn [e]
                                            (when-not @sending-disabled?
                                              (dispatch [:set-chat-ui-props :show-emoji? false])
-                                             (on-press e)))}]))
+                                             (on-press e)))
+                               :accessibility-label :send-command}]))
              (when (and @command? (= :command (:type @command)))
                [command/command-icon @command])]]))})))
-

@@ -69,7 +69,8 @@
          [view st/inner-container
           [command-icon @command]
           [info-container @command]
-          [touchable-highlight {:on-press #(dispatch [:start-cancel-command])}
+          [touchable-highlight {:on-press            #(dispatch [:start-cancel-command])
+                                :accessibility-label :cancel-response-button}
            [view st/cancel-container
             [icon :close_white st/cancel-icon]]]]]
         [view (merge (drag/pan-handlers pan-responder)
