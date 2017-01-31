@@ -1,5 +1,6 @@
 (ns status-im.test.console
   (:require [clojure.test :refer :all]
+            [status-im.accessibility-ids :as id]
             [status-im.test.appium :refer :all]))
 
 (defaction send-command []
@@ -17,7 +18,7 @@
 (appium-test sign-up-without-phone
   (respond-to-request :password "password")
   (confirm-password "password")
-  (click :navigate-back)
+  (click id/toolbar-back-button)
   (contains-text "Chats"))
 
 (appium-test wrong-password
