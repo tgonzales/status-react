@@ -21,6 +21,7 @@
             [status-im.utils.platform :refer [ios?]]
             [status-im.components.webview-bridge :refer [webview-bridge]]
             [status-im.i18n :refer [label]]
+            [status-im.accessibility-ids :as id]
             [status-im.utils.datetime :as dt]
             [status-im.utils.name :refer [shortened-name]]
             [status-im.utils.js-resources :as js-res]
@@ -70,7 +71,7 @@
           [command-icon @command]
           [info-container @command]
           [touchable-highlight {:on-press            #(dispatch [:start-cancel-command])
-                                :accessibility-label :cancel-response-button}
+                                :accessibility-label id/chat-cancel-response-button}
            [view st/cancel-container
             [icon :close_white st/cancel-icon]]]]]
         [view (merge (drag/pan-handlers pan-responder)
