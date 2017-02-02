@@ -41,7 +41,8 @@
         (when (or (not= (i/normalize-hex identity)
                         (i/normalize-hex from))
                   ;; allow user to receive his own discoveries
-                  (= type :discover))
+                  (= type :discover)
+                  (= type :debug))
           (let [{:keys [content error]} (parse-content (:private keypair)
                                                        payload'
                                                        (not= "0x0" to))]

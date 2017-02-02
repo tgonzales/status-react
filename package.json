@@ -74,6 +74,7 @@
     "react-native-webview-bridge": "github:status-im/react-native-webview-bridge#0.33.4",
     "readable-stream": "^1.0.33",
     "realm": "^0.14.3",
+    "status-dev-cli": "github:status-im/status-dev-cli",
     "stream-browserify": "^1.0.0",
     "timers-browserify": "^1.4.2",
     "tty-browserify": "0.0.0",

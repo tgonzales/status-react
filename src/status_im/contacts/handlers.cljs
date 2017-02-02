@@ -271,12 +271,22 @@
           (dispatch [:update-contact! {:whisper-identity from
                                        :last-online      timestamp}]))))))
 
-(register-handler :remove-contact
+(register-handler :hide-contact
   (after stop-watching-contact)
   (u/side-effect!
     (fn [_ [_ {:keys [whisper-identity] :as contact}]]
       (dispatch [:update-contact! (assoc contact :pending true)])
       (dispatch [:account-update-keys]))))
+
+(register-handler :remove-contact
+  (fn [db [_ whisper-identity cond]]
+    (if-let [contact (contacts/get-by-id whisper-identity)]
+      (if (cond contact)
+        (do
+          (contacts/delete contact)
+          (update db :contacts dissoc whisper-identity))
+        db)
+      db)))
 
 (register-handler
   :open-contact-menu
@@ -286,6 +296,6 @@
                           :options [(label :t/remove-contact)]
                           :callback (fn [index]
                                       (case index
-                                        0 (dispatch [:remove-contact contact])
+                                        0 (dispatch [:hide-contact contact])
                                         :default))
                           :cancel-text (label :t/cancel)}))))
