@@ -18,6 +18,9 @@
 (appium-test sign-up-without-phone
   (respond-to-request :password "password")
   (confirm-password "password")
+  (respond-to-request :phone "2015550123")
+  (respond-to-request :confirmation-code "1234")
+  (contains-text "Done!")
   (click id/toolbar-back-button)
   (contains-text "Chats"))
 
@@ -38,7 +41,7 @@
 (appium-test wrong-confirmation-code
   (respond-to-request :password "password")
   (confirm-password "password")
-  (respond-to-request :phone "+380671111111")
+  (respond-to-request :phone "2015550123")
   (respond-to-request :confirmation-code "432")
   (contains-text "Wrong format")
   (click id/chat-cancel-response-button)
